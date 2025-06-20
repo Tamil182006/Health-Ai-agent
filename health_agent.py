@@ -9,68 +9,134 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# 💅 Modern UI Styling - Only Visual Changes, No Logic Touched
 st.markdown("""
     <style>
     .main {
         padding: 2rem;
+        background-color: #f5f9ff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+        background-color: #f5f9ff;
     }
     .stButton>button {
         width: 100%;
-        border-radius: 5px;
+        border-radius: 10px;
         height: 3em;
+        background-color: #2e8b57;
+        color: white;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
     }
-    .success-box {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        background-color: #f0fff4;
-        border: 1px solid #9ae6b4;
-    }
-    .warning-box {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        background-color: #fffaf0;
-        border: 1px solid #fbd38d;
+    .stButton>button:hover {
+        background-color: #276747;
     }
     div[data-testid="stExpander"] div[role="button"] p {
         font-size: 1.1rem;
         font-weight: 600;
+    }
+    .custom-card {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
+    }
+    .success-box {
+        padding: 1rem;
+        border-radius: 10px;
+        background-color: #e6fffa;
+        border: 1px solid #81e6d9;
+        margin-bottom: 1rem;
+    }
+    .warning-box {
+        padding: 1rem;
+        border-radius: 10px;
+        background-color: #fffaf0;
+        border: 1px solid #fbd38d;
+        margin-bottom: 1rem;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #ddd;
+    }
+    h1, h2, h3 {
+        color: #2e8b57;
+        font-weight: 700;
+    }
+    .section-box {
+        background: linear-gradient(to right, #d4fc79, #96e6a1);
+        padding: 1rem;
+        border-radius: 12px;
+        color: #003300;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
     }
     </style>
 """, unsafe_allow_html=True)
 
 def display_dietary_plan(plan_content):
     with st.expander("📋 Your Personalized Dietary Plan", expanded=True):
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            st.markdown("### 🎯 Why this plan works")
-            st.info(plan_content.get("why_this_plan_works", "Information not available"))
-            st.markdown("### 🍽️ Meal Plan")
-            st.write(plan_content.get("meal_plan", "Plan not available"))
-        
-        with col2:
-            st.markdown("### ⚠️ Important Considerations")
-            considerations = plan_content.get("important_considerations", "").split('\n')
+        st.markdown(f"""
+        <div class="custom-card">
+            <h3>🌟 Why this plan works</h3>
+            <p>{plan_content.get("why_this_plan_works", "Information not available")}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+        <div class="custom-card">
+            <h3>🍽️ Meal Plan</h3>
+            <p>{plan_content.get("meal_plan", "Plan not available").replace('\n', '<br>')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        considerations = plan_content.get("important_considerations", "").split('\n')
+        if any(c.strip() for c in considerations):
+            st.markdown("""
+            <div class="custom-card">
+                <h3>⚠️ Important Considerations</h3>
+                <ul>
+            """, unsafe_allow_html=True)
             for consideration in considerations:
                 if consideration.strip():
-                    st.warning(consideration)
+                    st.markdown(f"<li>{consideration.strip()}</li>", unsafe_allow_html=True)
+            st.markdown("</ul></div>", unsafe_allow_html=True)
 
 def display_fitness_plan(plan_content):
     with st.expander("💪 Your Personalized Fitness Plan", expanded=True):
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            st.markdown("### 🎯 Goals")
-            st.success(plan_content.get("goals", "Goals not specified"))
-            st.markdown("### 🏋️‍♂️ Exercise Routine")
-            st.write(plan_content.get("routine", "Routine not available"))
-        
-        with col2:
-            st.markdown("### 💡 Pro Tips")
-            tips = plan_content.get("tips", "").split('\n')
+        st.markdown(f"""
+        <div class="custom-card">
+            <h3>🌟 Goals</h3>
+            <p>{plan_content.get("goals", "Goals not specified")}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+        <div class="custom-card">
+            <h3>🏋️‍♂️ Exercise Routine</h3>
+            <p>{plan_content.get("routine", "Routine not available").replace('\n', '<br>')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        tips = plan_content.get("tips", "").split('\n')
+        if any(t.strip() for t in tips):
+            st.markdown("""
+            <div class="custom-card">
+                <h3>💡 Pro Tips</h3>
+                <ul>
+            """, unsafe_allow_html=True)
             for tip in tips:
                 if tip.strip():
-                    st.info(tip)
+                    st.markdown(f"<li>{tip.strip()}</li>", unsafe_allow_html=True)
+            st.markdown("</ul></div>", unsafe_allow_html=True)
+
+# Keep rest of your logic (main(), etc.) unchanged. This is the enhanced CSS + display blocks.
+
 
 def main():
     if 'dietary_plan' not in st.session_state:
@@ -80,10 +146,11 @@ def main():
         st.session_state.plans_generated = False
 
     st.title("🏋️‍♂️ AI Health & Fitness Planner")
+
     st.markdown("""
-        <div style='background-color: #00008B; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;'>
-        Get personalized dietary and fitness plans tailored to your goals and preferences.
-        Our AI-powered system considers your unique profile to create the perfect plan for you.
+        <div class='section-box'>
+            Get personalized dietary and fitness plans tailored to your goals and preferences.
+            Our AI-powered system considers your unique profile to create the perfect plan for you.
         </div>
     """, unsafe_allow_html=True)
 
@@ -94,12 +161,12 @@ def main():
             type="password",
             help="Enter your Gemini API key to access the service"
         )
-        
+
         if not gemini_api_key:
             st.warning("⚠️ Please enter your Gemini API Key to proceed")
             st.markdown("[Get your API key here](https://aistudio.google.com/apikey)")
             return
-        
+
         st.success("API Key accepted!")
 
     if gemini_api_key:
@@ -110,9 +177,9 @@ def main():
             return
 
         st.header("👤 Your Profile")
-        
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
             age = st.number_input("Age", min_value=10, max_value=100, step=1, help="Enter your age")
             height = st.number_input("Height (cm)", min_value=100.0, max_value=250.0, step=0.1)
